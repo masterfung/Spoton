@@ -7,6 +7,7 @@ Production Configurations
 - Use sendgird to sendemails
 - Use MEMCACHIER on Heroku
 '''
+import os
 from configurations import values
 
 # See: http://django-storages.readthedocs.org/en/latest/backends/amazon-S3.html#settings
@@ -50,7 +51,7 @@ class Production(Common):
     ALLOWED_HOSTS = ["*"]
     # END SITE CONFIGURATION
 
-    INSTALLED_APPS += ("gunicorn", )
+    INSTALLED_APPS += ("gunicorn",)
 
     # STORAGE CONFIGURATION
     # See: http://django-storages.readthedocs.org/en/latest/index.html
@@ -92,6 +93,16 @@ class Production(Common):
     EMAIL_SUBJECT_PREFIX = values.Value('[spoton] ', environ_name="EMAIL_SUBJECT_PREFIX")
     EMAIL_USE_TLS = True
     SERVER_EMAIL = EMAIL_HOST_USER
+
+    # EMAIL_HOST = "smtp.sendgrid.net"
+    #
+    # EMAIL_HOST_USER = os.environ.get("SENDGRID_USERNAME")
+    #
+    # EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_PASSWORD")
+    #
+    # EMAIL_PORT = 25
+    #
+    # EMAIL_USE_TLS = False
     # END EMAIL
 
     # TEMPLATE CONFIGURATION

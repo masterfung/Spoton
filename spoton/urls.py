@@ -8,7 +8,18 @@ from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-admin.autodiscover()
+from rest_framework import viewsets, routers
+from event.models import Event
+from event.serializer import EventSerializer
+from event.views import EventList, EventDetail
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+router = routers.DefaultRouter()
+router.register(r'event', EventViewSet)
 
 urlpatterns = patterns('',
     url(r'^$',  # noqa
@@ -28,6 +39,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable avatars
     url(r'^avatar/', include('avatar.urls')),
 
-    # Your stuff: custom urls go here
+    url(r'^', include(router.urls)),
+    url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
+
+    url(r'^api/events/$', EventList.as_view(), name='event_list'),
+    url(r'^api/events/(?P<pk>[0-9]+)/$', EventDetail.as_view(), name='event_detail'),
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

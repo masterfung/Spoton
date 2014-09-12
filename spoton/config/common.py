@@ -43,6 +43,7 @@ class Common(Configuration):
         'allauth',  # registration
         'allauth.account',  # registration
         'allauth.socialaccount',  # registration
+        'rest_framework',
     )
 
     # Apps specific for this project go here.
@@ -72,6 +73,13 @@ class Common(Configuration):
     }
     # END MIGRATIONS CONFIGURATION
 
+    REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+    }
 
     # DEBUG
     # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug

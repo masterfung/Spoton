@@ -3,6 +3,8 @@
 *.pyc
 __pycache__
 
+spoton/scopes.py
+
 # Logs
 *.log
 pip-log.txt
