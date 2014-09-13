@@ -14,6 +14,7 @@ import os
 from os.path import join, dirname
 
 from configurations import Configuration, values
+from spoton.scopes import SENDGRID_USERNAME, SENDGRID_PASSWORD
 
 BASE_DIR = dirname(dirname(__file__))
 
@@ -228,6 +229,20 @@ class Common(Configuration):
     ACCOUNT_EMAIL_REQUIRED = True
     ACCOUNT_EMAIL_VERIFICATION = "mandatory"
     # END AUTHENTICATION CONFIGURATION
+
+    # EMAIL_BACKEND = "sgbackend.SendGridBackend"
+    #
+    # EMAIL_HOST = "smtp.sendgrid.net"
+    #
+    # EMAIL_HOST_USER = SENDGRID_USERNAME
+    #
+    # EMAIL_HOST_PASSWORD = SENDGRID_PASSWORD
+    #
+    # EMAIL_PORT = 25
+    #
+    # EMAIL_USE_TLS = False
+    #
+    # SERVER_EMAIL = EMAIL_HOST_USER
 
     # Custom user app defaults
     # Select the correct user model
