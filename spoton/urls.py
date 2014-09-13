@@ -18,6 +18,9 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def pre_save(self, obj):
+        obj.owner = self.request.user
+
 router = routers.DefaultRouter()
 router.register(r'event', EventViewSet)
 
@@ -30,7 +33,7 @@ urlpatterns = patterns('',
         name="about"),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^spotonadmin/', include(admin.site.urls)),
 
     # User management
     url(r'^users/', include("users.urls", namespace="users")),
@@ -44,5 +47,8 @@ urlpatterns = patterns('',
 
     url(r'^api/events/$', EventList.as_view(), name='event_list'),
     url(r'^api/events/(?P<pk>[0-9]+)/$', EventDetail.as_view(), name='event_detail'),
+
+    # url(r'^events/$', 'event.views.event_search_input', name='event_search_input'),
+
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

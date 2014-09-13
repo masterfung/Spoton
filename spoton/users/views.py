@@ -3,6 +3,7 @@
 from django.core.urlresolvers import reverse
 
 # view imports
+from django.shortcuts import redirect, render
 from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
@@ -16,6 +17,8 @@ from .forms import UserForm
 
 # Import the customized User model
 from .models import User
+from event.forms import EventForm
+from event.models import Event
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -23,6 +26,21 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     # These next two lines tell the view to index lookups by username
     slug_field = "username"
     slug_url_kwarg = "username"
+
+    def event_search(request):
+        event = Event.objects.filter(user=request.user)
+
+        if 'event' in request.POST:
+            event_form = EventForm(request.POST)
+            if event_form.is_valid():
+                event = event_form.save(commit=False)
+                event.user = request.user
+                event.save()
+                return redirect('/profile')
+        else:
+            event_form = EventForm()
+        data = {'user': request.user, 'event': event, 'event_form': event_form}
+        return render(request, 'users/user_detail.html', data)
 
 
 class UserRedirectView(LoginRequiredMixin, RedirectView):

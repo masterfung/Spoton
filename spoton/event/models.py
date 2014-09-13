@@ -9,4 +9,4 @@ class Event(models.Model):
     user = models.ForeignKey(User, related_name='user')
 
     def __unicode__(self):
-        return "{} inputted this link: {}".format(self.url, self.first_name)
+        return "{} inputted this link: {}".format(self.url, self.user.username)

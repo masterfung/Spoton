@@ -14,7 +14,7 @@ import os
 from os.path import join, dirname
 
 from configurations import Configuration, values
-from spoton.scopes import SENDGRID_USERNAME, SENDGRID_PASSWORD
+from scopes import SENDGRID_USERNAME, SENDGRID_PASSWORD
 
 BASE_DIR = dirname(dirname(__file__))
 
