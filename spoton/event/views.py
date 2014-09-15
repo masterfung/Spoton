@@ -77,7 +77,7 @@ first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
 
 
 def beautiful_soup_request(url):
-   # boston = Event.objects.get(url='http://calendar.boston.com/lowell_ma/events/show')
+    boston = Event.objects.get(url='http://calendar.boston.com/lowell_ma/events/show')
     first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
 
     boston = 'http://calendar.boston.com/lowell_ma/events/show'
