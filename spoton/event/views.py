@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.views.generic import View
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from event.models import Event
@@ -76,19 +77,29 @@ first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
 
 
 def beautiful_soup_request(url):
-    r = get(first_expected)
+   # boston = Event.objects.get(url='http://calendar.boston.com/lowell_ma/events/show')
+    first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
 
-    if r.status_code != 200:
-        print 'request has errors!'
-        return
+    boston = 'http://calendar.boston.com/lowell_ma/events/show'
 
-    soup = BeautifulSoup(r.content)
+    match = re.compile('(/boston_ma/events/show/)')
 
-    for link in soup.find_all('a'):
-        print(link.get('href'))
+    if boston == first_expected:
+        r = get(first_expected)
 
+        if r.status_code != 200:
+            print 'request has errors!'
+            return
 
+        soup = BeautifulSoup(r.content)
 
+        for link in soup.find_all('a'):
+            try:
+                href = link['href']
+                if re.search(match, href):
+                    print href
+            except KeyError:
+                pass
 
 
 second = 'http://www.sfmoma.org/exhib_events/exhibitions/513'
@@ -107,6 +118,6 @@ print url_regex(first)
 
 print consecutive_incrementor(10, fourth)
 
-assert consecutive(3, fourth) == ['http://events.stanford.edu/events/353/35310/',
+assert consecutive_incrementor(3, fourth) == ['http://events.stanford.edu/events/353/35310/',
                                   'http://events.stanford.edu/events/353/35311/',
                                   'http://events.stanford.edu/events/353/35312/']
