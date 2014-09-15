@@ -72,19 +72,25 @@ def consecutive_incrementor(amount, url):
         results.append(url)
     return results
 
+
 first = 'http://calendar.boston.com/lowell_ma/events/show/274127485-mrt-presents-shakespeares-will'
-first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
+second = 'http://www.sfmoma.org/exhib_events/exhibitions/513'
+third = 'http://www.workshopsf.org/?page_id=140&id=1328'
+fourth = 'http://events.stanford.edu/events/353/35309/'
+eventbrite_link = 'http://www.eventbrite.com/e/sausalito-art-festival-2014-tickets-11831764125?aff=ehometext&rank=0'
 
 
-def beautiful_soup_request(url):
-    boston = Event.objects.get(url='http://calendar.boston.com/lowell_ma/events/show')
-    first_expected = 'http://calendar.boston.com/lowell_ma/events/show'
+def beautiful_links_request(url):
+    # boston = Event.objects.get(url='http://calendar.boston.com/lowell_ma/events/show/274127485-mrt-presents-shakespeares-will')
 
-    boston = 'http://calendar.boston.com/lowell_ma/events/show'
+    chomp = url_regex(url)
+    print chomp
+
+    first_expected = 'http://calendar.boston.com/lowell_ma/events/show/'
 
     match = re.compile('(/boston_ma/events/show/)')
 
-    if boston == first_expected:
+    if chomp == first_expected:
         r = get(first_expected)
 
         if r.status_code != 200:
@@ -100,24 +106,58 @@ def beautiful_soup_request(url):
                     print href
             except KeyError:
                 pass
+    else:
+        results = consecutive_incrementor(10, chomp)
+        for result in results:
+            print result
 
 
-second = 'http://www.sfmoma.org/exhib_events/exhibitions/513'
-second_expected = 'http://www.sfmoma.org/exhib_events/exhibitions/514'
-assert url_regex(second) == second_expected
+# beautiful_links_request(eventbrite_link)
 
-third = 'http://www.workshopsf.org/?page_id=140&id=1328'
-third_expected = 'http://www.workshopsf.org/?page_id=140&id=1329'
-assert url_regex(third) == third_expected
 
-fourth = 'http://events.stanford.edu/events/353/35309/'
-fourth_expected = 'http://events.stanford.edu/events/353/35310/'
-assert url_regex(fourth) == fourth_expected
+def eventbrite(url):
+    working_var = url
+    result = re.search('^(http[s]?://.*[^0-9].com)', working_var)
+    final = result.group()
+    r = get(final)
+    soup = BeautifulSoup(r.content)
 
-print url_regex(first)
+    eventbrite_match = re.compile('(http://www.eventbrite.com/e/)')
+    links = soup.find_all('a')
+    for link in links:
+        print link.get('href')
 
-print consecutive_incrementor(10, fourth)
+    # print links
+
+    for link in links:
+        try:
+            href = link['href']
+            if re.search(eventbrite_match, href):
+                print href
+        except KeyError:
+            pass
+
+
+# eventbrite(eventbrite_link)
+eventbrite('http://www.meetup.com')
+
+
+# second = 'http://www.sfmoma.org/exhib_events/exhibitions/513'
+# second_expected = 'http://www.sfmoma.org/exhib_events/exhibitions/514'
+# assert url_regex(second) == second_expected
+#
+# third = 'http://www.workshopsf.org/?page_id=140&id=1328'
+# third_expected = 'http://www.workshopsf.org/?page_id=140&id=1329'
+# assert url_regex(third) == third_expected
+#
+# fourth = 'http://events.stanford.edu/events/353/35309/'
+# fourth_expected = 'http://events.stanford.edu/events/353/35310/'
+# assert url_regex(fourth) == fourth_expected
+#
+# print url_regex(first)
+#
+# print consecutive_incrementor(10, fourth)
 
 assert consecutive_incrementor(3, fourth) == ['http://events.stanford.edu/events/353/35310/',
-                                  'http://events.stanford.edu/events/353/35311/',
-                                  'http://events.stanford.edu/events/353/35312/']
+                                              'http://events.stanford.edu/events/353/35311/',
+                                              'http://events.stanford.edu/events/353/35312/']
