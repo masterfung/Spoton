@@ -4,13 +4,16 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
+from django.db import IntegrityError
 from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 from rest_framework import viewsets, routers
-from event.models import Event
+from rest_framework.response import Response
+
 from event.serializer import EventSerializer
+from event.models import Event
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -18,7 +21,15 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
 
     def pre_save(self, obj):
-        obj.owner = self.request.user
+        obj.user = self.request.user
+
+    def create(self, request, *args, **kwargs):
+        try:
+            return super(EventViewSet, self).create(request, *args, **kwargs)
+        except IntegrityError:
+            return Response({
+                'error': "You already submitted this URL!"
+            }, status=400)
 
 router = routers.DefaultRouter()
 router.register(r'event', EventViewSet)
@@ -43,9 +54,6 @@ urlpatterns = patterns('',
 
     url(r'^', include(router.urls)),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
-
-    # url(r'^api/events/$', EventList.as_view(), name='event_list'),
-    # url(r'^api/events/(?P<pk>[0-9]+)/$', EventDetail.as_view(), name='event_detail'),
 
     # url(r'^events/$', 'event.views.event_search_input', name='event_search_input'),
 

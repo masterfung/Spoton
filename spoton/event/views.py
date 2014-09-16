@@ -1,4 +1,3 @@
-import urlparse
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -6,13 +5,13 @@ from django.views.generic import View
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from event.models import Event
-from event.serializer import EventSerializer
+# from event.serializer import EventSerializer
 from rest_framework import generics
 from event.forms import EventForm
 import re
 from requests import get
+import urlparse
 from bs4 import BeautifulSoup
-
 
 # class EventMixin(object):
 #     """
@@ -31,26 +30,26 @@ from bs4 import BeautifulSoup
 #     users to create new events.
 #     """
 #     permission_classes = (IsAuthenticated,)
-#
-#
+
+
 # class EventDetail(EventMixin, generics.RetrieveUpdateDestroyAPIView):
 #     permission_classes = (IsAdminUser,)
 
 
-# def event_search_input(request):
-#     event = Event.objects.filter(user=request.user)
-#
-#     if 'event' in request.POST:
-#         event_form = EventForm(request.POST, prefix='event')
-#         if event_form.is_valid():
-#             event = event_form.save(commit=False)
-#             event.user = request.user
-#             event.save()
-#             return redirect('/profile')
-#     else:
-#         event_form = EventForm(prefix='event')
-#     data = {'user': request.user, 'event': event, 'event_form': event_form}
-#     return render(request, 'rest_overwrite.html', data)
+def event_search_input(request):
+    event = Event.objects.filter(user=request.user)
+
+    if 'event' in request.POST:
+        event_form = EventForm(request.POST, prefix='event')
+        if event_form.is_valid():
+            event = event_form.save(commit=False)
+            event.user = request.user
+            event.save()
+            return redirect('/profile')
+    else:
+        event_form = EventForm(prefix='event')
+    data = {'user': request.user, 'event': event, 'event_form': event_form}
+    return render(request, 'rest_overwrite.html', data)
 
 
 def incrementor(match):
@@ -89,6 +88,7 @@ def handle_eventbrite_url(url):
     soup = BeautifulSoup(r.content)
 
     eventbrite_match = re.compile('(http://www.eventbrite.com/e/)')
+    meetup_match = re.compile('(http://www.meetup.com/)')
     links = soup.find_all('a')
     # for link in links:
     #     print link.get('href')
@@ -109,6 +109,25 @@ def handle_eventbrite_url(url):
 
     return output
 
+def handle_meetup_url(url):
+    working_var = url
+    result = re.search('^(http[s]?://.*[^0-9].com)', working_var)
+    final = result.group()
+    r = get(final)
+    soup = BeautifulSoup(r.content)
+
+    links = soup.find_all('a')
+
+    output = []
+    for link in links:
+        try:
+            href = link.get('href')
+            output.append(href)
+
+        except KeyError:
+            pass
+
+    return output[18:28]
 
 def handle_generic_url(url):
     chomp = url_regex(url)
@@ -146,7 +165,8 @@ def handle_generic_url(url):
 
 
 url_handlers = {
-    'www.eventbrite.com': handle_eventbrite_url
+    'www.eventbrite.com': handle_eventbrite_url,
+    'www.meetup.com': handle_meetup_url
 }
 
 
@@ -154,24 +174,3 @@ def dispatch_url(url):
     parsed = urlparse.urlparse(url)
     handler = url_handlers.get(parsed.hostname, handle_generic_url)
     return handler(url)
-
-
-# second = 'http://www.sfmoma.org/exhib_events/exhibitions/513'
-# second_expected = 'http://www.sfmoma.org/exhib_events/exhibitions/514'
-# assert url_regex(second) == second_expected
-#
-# third = 'http://www.workshopsf.org/?page_id=140&id=1328'
-# third_expected = 'http://www.workshopsf.org/?page_id=140&id=1329'
-# assert url_regex(third) == third_expected
-#
-# fourth = 'http://events.stanford.edu/events/353/35309/'
-# fourth_expected = 'http://events.stanford.edu/events/353/35310/'
-# assert url_regex(fourth) == fourth_expected
-#
-# print url_regex(first)
-#
-# print consecutive_incrementor(10, fourth)
-
-# assert consecutive_incrementor(3, fourth) == ['http://events.stanford.edu/events/353/35310/',
-#                                               'http://events.stanford.edu/events/353/35311/',
-#                                               'http://events.stanford.edu/events/353/35312/']

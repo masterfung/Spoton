@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Event
+from event.views import dispatch_url
+
 
 class EventSerializer(serializers.ModelSerializer):
     results = serializers.SerializerMethodField('get_results')
