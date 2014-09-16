@@ -16,23 +16,23 @@ from event.serializer import EventSerializer
 from event.models import Event
 
 
-class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
-    def pre_save(self, obj):
-        obj.user = self.request.user
-
-    def create(self, request, *args, **kwargs):
-        try:
-            return super(EventViewSet, self).create(request, *args, **kwargs)
-        except IntegrityError:
-            return Response({
-                'error': "You already submitted this URL!"
-            }, status=400)
-
-router = routers.DefaultRouter()
-router.register(r'event', EventViewSet)
+# class EventViewSet(viewsets.ModelViewSet):
+#     queryset = Event.objects.all()
+#     serializer_class = EventSerializer
+#
+#     def pre_save(self, obj):
+#         obj.user = self.request.user
+#
+#     def create(self, request, *args, **kwargs):
+#         try:
+#             return super(EventViewSet, self).create(request, *args, **kwargs)
+#         except IntegrityError:
+#             return Response({
+#                 'error': "You already submitted this URL!"
+#             }, status=400)
+#
+# router = routers.DefaultRouter()
+# router.register(r'event', EventViewSet)
 
 urlpatterns = patterns('',
     url(r'^$',  # noqa
@@ -52,10 +52,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable avatars
     url(r'^avatar/', include('avatar.urls')),
 
-    url(r'^', include(router.urls)),
+    # url(r'^', include(router.urls)),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
 
-    # url(r'^events/$', 'event.views.event_search_input', name='event_search_input'),
+    url(r'^input/', include("event.urls")),
 
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
