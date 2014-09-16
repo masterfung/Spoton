@@ -11,7 +11,6 @@ from django.contrib import admin
 from rest_framework import viewsets, routers
 from event.models import Event
 from event.serializer import EventSerializer
-from event.views import EventList, EventDetail
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -45,8 +44,8 @@ urlpatterns = patterns('',
     url(r'^', include(router.urls)),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
 
-    url(r'^api/events/$', EventList.as_view(), name='event_list'),
-    url(r'^api/events/(?P<pk>[0-9]+)/$', EventDetail.as_view(), name='event_detail'),
+    # url(r'^api/events/$', EventList.as_view(), name='event_list'),
+    # url(r'^api/events/(?P<pk>[0-9]+)/$', EventDetail.as_view(), name='event_detail'),
 
     # url(r'^events/$', 'event.views.event_search_input', name='event_search_input'),
 
