@@ -1,5 +1,5 @@
 Collectfast==0.2.1
-Django==1.7
+Django==1.11.29
 Pillow==2.5.3
 beautifulsoup4==4.3.2
 boto==2.32.1
