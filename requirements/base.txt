@@ -38,7 +38,7 @@ sendgrid==0.5.1
 sendgrid-django==1.0.3
 six==1.8.0
 smtpapi==0.1.2
-sqlparse==0.1.11
+sqlparse==0.6.0
 static3==0.5.1
 unicode-slugify==0.1.1
 unittest2==0.5.1
